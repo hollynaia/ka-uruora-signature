@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow"><title>Email Signature | Ka Uruora</title><style>
+</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"><style>
+
+@font-face{font-family:'FK Screamer';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/fk-screamer.otf') format('opentype');}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--green-01:#106636;--green-02:#0C8F45;--green-03:#35AB49;--green-04:#94C13D;--red-01:#921A12;--red-02:#C96F69;--red-03:#FFC4BF;--white:#FFFFFF;--tint:#D7EEDB;--border:#C0DFCB;--text:#000000;--muted:#0C8F45;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);line-height:1.6;}
+
+/* ===== split screen ===== */
+.split{display:grid;grid-template-columns:minmax(380px,1fr) minmax(0,1.25fr);min-height:100vh;}
+.edit-pane{border-right:none;min-width:0;display:flex;flex-direction:column;}
+.preview-pane{background:#EDEDED;color:var(--text);min-width:0;}
+.preview-sticky{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:56px clamp(24px,4vw,64px);}
+
+/* header block at top of the edit pane */
+.header{background:var(--green-01);color:#fff;padding:48px clamp(24px,4vw,56px) 44px;}
+.hm-title{font-size:15px;font-weight:600;margin-bottom:6px;opacity:.95;}
+.header h1{font-family:'FK Screamer','DM Sans',sans-serif;font-size:clamp(44px,5vw,72px);font-weight:500;line-height:1;letter-spacing:.4px;}
+.header-intro{font-size:15px;opacity:.88;line-height:1.45;max-width:460px;}
+
+/* edit sections */
+.block{padding:44px clamp(24px,4vw,56px);border-bottom:1.5px solid #808080;}
+.block:last-of-type{border-bottom:none;}
+.block-title{font-size:clamp(24px,2.4vw,32px);font-weight:400;line-height:1.05;margin-bottom:22px;}
+.block-desc{font-size:14.5px;line-height:1.5;opacity:.8;margin-bottom:26px;}
+.section-label{font-size:15px;font-weight:600;color:var(--green-01);margin-bottom:10px;}
+.subsection{margin-bottom:26px;}
+.subsection:last-child{margin-bottom:0;}
+.hint{font-size:14px;color:var(--text);opacity:.75;margin-bottom:14px;line-height:1.5;}
+.hint.warn{opacity:1;}
+.hint strong{font-weight:700;}
+
+/* form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 18px;}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:13px;font-weight:600;color:var(--green-01);}
+.field label .opt{font-weight:400;opacity:.75;}
+.field input{font-family:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--border);border-radius:8px;background:#f7f7f7;color:var(--text);width:100%;}
+.field input:focus{outline:none;border-color:var(--green-02);background:#fff;box-shadow:0 0 0 3px rgba(53,171,73,.15);}
+.field input.invalid{border-color:var(--red-01);background:#fff6f5;}
+
+/* banner picker */
+.banner-options{display:flex;flex-direction:column;gap:10px;}
+.banner-option{position:relative;display:block;background:#f7f7f7;border:1px solid #ccc;border-radius:10px;padding:10px;cursor:pointer;transition:border-color .15s,background .15s;}
+.banner-option:hover{border-color:var(--green-03);}
+.banner-option input{position:absolute;opacity:0;pointer-events:none;}
+.banner-option img{width:100%;aspect-ratio:3.6/1;object-fit:cover;border-radius:6px;display:block;}
+.bo-tick{position:absolute;top:18px;right:18px;width:26px;height:26px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#fff;}
+.bo-tick svg{opacity:0;}
+.banner-option.selected .bo-tick svg{opacity:1;}
+.banner-option.selected{border:2px solid var(--green-02);background:var(--tint);padding:9px;}
+.banner-option.selected .bo-tick{background:var(--green-02);border-color:#fff;}
+.banner-option:focus-within{box-shadow:0 0 0 3px rgba(53,171,73,.25);}
+
+/* preview */
+.preview-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.preview-title{font-size:clamp(24px,2.4vw,32px);font-weight:400;line-height:1.05;}
+.preview-note{font-size:13px;color:var(--text);opacity:.65;}
+.preview-card{background:#fff;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 14px 36px rgba(0,0,0,.10);overflow:hidden;margin-bottom:20px;}
+.mail-bar{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid #eee;}
+.mail-bar i{width:10px;height:10px;border-radius:50%;background:#e2e2e2;display:block;}
+.mail-body{padding:24px clamp(16px,3vw,32px) 30px;}
+.mail-greeting{font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A1A1A;line-height:1.6;margin-bottom:22px;}
+.mail-greeting span{display:block;height:9px;border-radius:5px;background:#eee;margin-bottom:10px;}
+.sig-scale{width:100%;overflow:hidden;}
+.sig-scale>div{width:600px;transform-origin:top left;}
+.action-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:7px;padding:12px 18px;font-size:13px;line-height:1;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s,color .15s,box-shadow .15s;}
+.btn-dark{background:var(--green-01);color:#fff;}
+.btn-dark:hover{background:var(--green-02);}
+.btn-solid{background:var(--green-02);color:#fff;}
+.btn-solid:hover{background:var(--green-01);}
+.btn-outline{background:#fff;color:var(--green-01);box-shadow:inset 0 0 0 1px var(--green-02);}
+.btn-outline:hover{background:var(--green-01);color:#fff;box-shadow:inset 0 0 0 1px var(--green-01);}
+.btn.done{background:var(--green-03);color:#fff;box-shadow:none;}
+.status{font-size:13px;color:var(--red-01);margin-top:12px;min-height:1.2em;}
+.copied-msg{margin-top:16px;font-size:14px;line-height:1.45;color:var(--text);opacity:0;transition:opacity .25s;}
+.copied-msg.show{opacity:1;}
+.copied-msg strong{font-weight:700;color:var(--green-01);}
+
+.preview-pane .status{color:var(--text);font-weight:600;}
+.preview-pane .hint.warn{color:var(--text);}
+.preview-pane .btn-dark{background:var(--green-01);color:#fff;}
+.preview-pane .btn-dark:hover{background:#000;}
+.preview-pane .btn.done{background:var(--green-03);color:#fff;}
+
+/* install tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.tab{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--green-01);background:var(--tint);border:none;border-radius:20px;padding:7px 14px;cursor:pointer;}
+.tab:hover{background:var(--border);}
+.tab[aria-selected="true"]{background:var(--green-01);color:#fff;}
+.panel[hidden]{display:none;}
+.install-steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;}
+.install-steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--border);font-size:14.5px;line-height:1.45;}
+.install-steps li:first-child{padding-top:0;}
+.install-steps li:last-child{border-bottom:none;}
+.install-steps li::before{content:counter(s);flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--green-02);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:-1px;}
+.install-steps strong{font-weight:600;}
+kbd{font-family:inherit;font-size:12px;font-weight:600;background:#f2f2f2;border:1px solid #ccc;border-bottom-width:2px;border-radius:4px;padding:1px 6px;white-space:nowrap;}
+.path{font-weight:600;color:var(--green-01);}
+
+/* footer */
+.footer-brand{margin-top:auto;border-top:4px solid var(--green-02);}
+.footer-inner{display:flex;align-items:center;justify-content:center;padding:32px 20px;}
+.footer-logo{width:clamp(110px,12vw,170px);height:auto;display:block;}
+
+/* stacked on smaller screens: preview sits between the form and the install steps */
+@media(max-width:960px){
+  .split{display:flex;flex-direction:column;}
+  .edit-pane{display:contents;}
+  .header{order:1;}
+  #blk-details{order:2;}
+  #blk-banner{order:3;border-bottom:none;}
+  .preview-pane{order:4;}
+  #blk-install{order:5;border-bottom:none;}
+  .footer-brand{order:6;}
+  .preview-sticky{position:static;min-height:0;padding:40px 24px;}
+}
+@media(max-width:520px){
+  .form-grid{grid-template-columns:1fr;}
+  .action-row{flex-direction:column;align-items:stretch;}
+  .btn{justify-content:center;}
+}
+</style></head><body>
+
+<div class="split">
+
+  <!-- ===== LEFT: edit ===== -->
+  <div class="edit-pane">
+    <div class="header">
+      <h1>Ka Uruora<br>Email Signature Builder</h1>
+    </div>
+
+    <section class="block" id="blk-details">
+      <h2 class="block-title">Your details</h2>
+      <div class="form-grid">
+        <div class="field"><label for="f-name">Full name</label><input id="f-name" type="text" autocomplete="name" placeholder="Your full name"></div>
+        <div class="field"><label for="f-title">Role</label><input id="f-title" type="text" autocomplete="organization-title" placeholder="Your role"></div>
+        <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" placeholder="Your work email"></div>
+        <div class="field"><label for="f-mobile">Mobile <span class="opt">(optional)</span></label><input id="f-mobile" type="tel" placeholder="+64 21 000 0000"></div>
+        <div class="field"><label for="f-phone">Landline <span class="opt">(optional)</span></label><input id="f-phone" type="tel" placeholder="+64 7 000 0000"></div>
+        <div class="field full"><label for="f-address">Office address <span class="opt">(optional)</span></label><input id="f-address" type="text" autocomplete="street-address" placeholder="Street, town"></div>
+      </div>
+    </section>
+
+    <section class="block" id="blk-banner">
+      <h2 class="block-title">Choose your banner</h2>
+      <div class="banner-options" id="banners" role="radiogroup" aria-label="Banner"></div>
+    </section>
+
+    <section class="block" id="blk-install">
+      <h2 class="block-title">Add it to Outlook</h2>
+      <p class="block-desc">Pick the version of Outlook you use. If you use Outlook on more than one computer, add your signature on each one.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="p-mac" id="t-mac">Mac</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-win" id="t-win">Windows</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-web" id="t-web">Web</button>
+      </div>
+
+      <div class="panel" id="p-mac" role="tabpanel" aria-labelledby="t-mac">
+        <ol class="install-steps">
+          <li><div>Make sure <strong>New Outlook</strong> is switched on. Look for the <strong>New Outlook</strong> switch at the top right of Outlook, or under the <span class="path">Outlook</span> menu. The older version of Outlook for Mac breaks the signature images.</div></li>
+          <li><div>Click <strong>Copy signature</strong>.</div></li>
+          <li><div>In Outlook, go to <span class="path">Outlook &gt; Settings &gt; Signatures</span>.</div></li>
+          <li><div>Click <strong>+</strong> to add a new signature and call it <strong>Ka Uruora</strong>.</div></li>
+          <li><div>Click into the empty signature box and paste with <kbd>⌘ Cmd</kbd> + <kbd>V</kbd>.</div></li>
+          <li><div>Set it as your default for <strong>new messages</strong>, then save and close the window.</div></li>
+        </ol>
+      </div>
+
+      <div class="panel" id="p-win" role="tabpanel" aria-labelledby="t-win" hidden>
+        <div class="subsection">
+          <div class="section-label">New Outlook</div>
+          <ol class="install-steps">
+            <li><div>Click <strong>Copy signature</strong>.</div></li>
+            <li><div>In Outlook, click the <strong>Settings</strong> cog at the top right, then go to <span class="path">Account &gt; Signatures</span>.</div></li>
+            <li><div>Click <strong>New signature</strong> and call it <strong>Ka Uruora</strong>.</div></li>
+            <li><div>Click into the signature box and paste with <kbd>Ctrl</kbd> + <kbd>V</kbd>.</div></li>
+            <li><div>Choose it as your default for <strong>new messages</strong>, then click <strong>Save</strong>.</div></li>
+          </ol>
+        </div>
+        <div class="subsection">
+          <div class="section-label">Classic Outlook</div>
+          <ol class="install-steps">
+            <li><div>Click <strong>Copy signature</strong>.</div></li>
+            <li><div>In Outlook, go to <span class="path">File &gt; Options &gt; Mail &gt; Signatures</span>.</div></li>
+            <li><div>Click <strong>New</strong> and call it <strong>Ka Uruora</strong>.</div></li>
+            <li><div>Click into the <strong>Edit signature</strong> box and paste with <kbd>Ctrl</kbd> + <kbd>V</kbd>.</div></li>
+            <li><div>Under <strong>Choose default signature</strong>, pick it for <strong>new messages</strong>, then click <strong>OK</strong>.</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="panel" id="p-web" role="tabpanel" aria-labelledby="t-web" hidden>
+        <ol class="install-steps">
+          <li><div>Click <strong>Copy signature</strong>.</div></li>
+          <li><div>Open Outlook in your browser at <span class="path">outlook.office.com</span>.</div></li>
+          <li><div>Click the <strong>Settings</strong> cog at the top right, then go to <span class="path">Account &gt; Signatures</span>.</div></li>
+          <li><div>Click <strong>New signature</strong>, call it <strong>Ka Uruora</strong>, then click into the box and paste.</div></li>
+          <li><div>Choose it as your default for <strong>new messages</strong>, then click <strong>Save</strong>.</div></li>
+        </ol>
+      </div>
+
+
+      <div class="hint" style="margin-top:22px;margin-bottom:0;">Once it's in, send yourself a test email to check it looks right.</div>
+    </section>
+
+    <footer class="footer-brand">
+      <div class="footer-inner"><img class="footer-logo" src="images/ka-uruora-tohu.png" alt="Ka Uruora"></div>
+    </footer>
+  </div>
+
+  <!-- ===== RIGHT: preview ===== -->
+  <aside class="preview-pane">
+    <div class="preview-sticky">
+      <div class="preview-head">
+        <h2 class="preview-title">Your signature</h2>
+        <span class="preview-note">This is exactly what people will see</span>
+      </div>
+      <div class="hint warn" id="local-warning" hidden><strong>This page isn't on the live site yet.</strong> Your preview is fine, but signatures copied from here point to images on the live Ka Uruora signature site, so they won't show in Outlook until it's up.</div>
+      <div class="preview-card">
+        <div class="mail-bar"><i></i><i></i><i></i></div>
+        <div class="mail-body">
+          <div class="mail-greeting" aria-hidden="true"><span style="width:38%"></span><span style="width:86%"></span><span style="width:64%"></span></div>
+          <div class="sig-scale" id="sig-scale"><div id="preview"></div></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-dark" id="btn-copy" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> <span>Copy signature</span></button>
+      </div>
+      <div class="copied-msg" id="copied-msg" role="status" aria-live="polite" hidden>
+
+        <div><strong>Signature copied to clipboard.</strong> Now paste it into Outlook using the steps on the left.</div>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </div>
+  </aside>
+</div>
+
+<script>
+/* ===== Settings =====
+   HOST is where the signature images live for the signature people copy into
+   Outlook. On the live site it's picked up automatically. LIVE_HOST is the
+   fallback when the page is opened as a file on someone's computer. */
+const LIVE_HOST = 'https://ka-uruora-signature.vercel.app';
+const WEBSITE_URL = 'https://www.kauruora.nz';
+const WEBSITE_LABEL = 'www.kauruora.nz';
+const BANNER_LINK = 'https://www.kauruora.nz';
+const LOGO = {file:'images/ka-uruora-logo.png', width:153, height:36};
+const BANNERS = [
+  {id:'pattern', file:'images/banner-1-pattern.jpg', name:'Green pattern',    spec:'Tagline over the green pattern'},
+  {id:'split',   file:'images/banner-2-split.jpg',   name:'Tagline and tohu', spec:'Tagline beside the white Ka Uruora tohu'},
+  {id:'whanau',  file:'images/banner-3-whanau.jpg',  name:'Forest canopy',      spec:'Ka Uruora logo with a forest photo'}
+];
+const BANNER_SIZE = {width:600, height:167};
+const C = {green1:'#106636', green2:'#0C8F45', green3:'#35AB49', green4:'#94C13D', text:'#1A1A1A'};
+
+/* signature images always point at the live site, wherever this page is opened from */
+const isLive = location.origin === LIVE_HOST;
+const HOST = LIVE_HOST;
+if(!isLive) document.getElementById('local-warning').hidden = false;
+
+const $ = id => document.getElementById(id);
+const fields = ['name','title','email','mobile','phone','address'];
+let banner = BANNERS[0].id;
+
+/* ===== Helpers ===== */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+/* macrons and other special letters become HTML codes so they survive any email system */
+function entities(html){return html.replace(/[^\x00-\x7F]/g, ch => '&#' + ch.codePointAt(0) + ';');}
+function tel(n){return 'tel:' + n.replace(/[^\d+]/g,'');}
+function values(){const v={};fields.forEach(f=>v[f]=$('f-'+f).value.trim());return v;}
+const hosted = f => HOST + '/' + f;
+/* the preview loads the same image files from this site */
+const embedded = f => f;
+
+/* ===== The signature =====
+   Tables and inline styles only, because that's what Outlook (Word) reads
+   reliably. Colours use bgcolor on table cells, never CSS backgrounds or
+   gradients. Arial, because almost no recipient has DM Sans installed and some
+   Outlook versions fall back to Times New Roman when the first font is missing. */
+function buildSignature(v, src){
+  const F = 'font-family:Arial,Helvetica,sans-serif;';
+  const LH = 22;
+  const lineStyle = F + 'font-size:14px;line-height:' + LH + 'px;color:' + C.text + ';mso-line-height-rule:exactly;';
+  const linkStyle = 'color:' + C.text + ';text-decoration:none;';
+
+  const name  = v.name  || 'Your Name';
+  const title = v.title || 'Your role';
+  const email = v.email || 'you@email';
+
+  const lines = [];
+  /* the colour sits on a span inside each link as well, because some editors restyle links on paste */
+  const link = (href, text) => '<a href="' + href + '" style="' + linkStyle + '"><span style="' + linkStyle + '">' + text + '</span></a>';
+  lines.push(link('mailto:' + esc(email), esc(email)));
+  const both = v.mobile && v.phone;
+  const lbl = t => both ? '<span style="color:' + C.green2 + ';font-weight:bold;">' + t + '</span>&nbsp;&nbsp;' : '';
+  /* phone numbers are plain text so email programs don't restyle them as links */
+  const plain = t => '<span style="' + linkStyle + '">' + t + '</span>';
+  if(v.mobile) lines.push(lbl('M') + plain(esc(v.mobile)));
+  if(v.phone)  lines.push(lbl('P') + plain(esc(v.phone)));
+  if(v.address) lines.push(esc(v.address));
+
+  const rows = lines.map(l => '<tr><td style="' + lineStyle + 'padding:0;" height="' + LH + '">' + l + '</td></tr>').join('');
+
+  /* 2pt black divider line (2pt is about 3px on screen) */
+  const barH = Math.max(lines.length, 2) * LH;
+  const bar = '<table cellpadding="0" cellspacing="0" border="0" width="3" style="border-collapse:collapse;width:3px;table-layout:fixed;"><tr><td width="3" height="' + barH + '" bgcolor="#000000" style="width:3px;height:' + barH + 'px;background-color:#000000;font-size:1px;line-height:1px;mso-line-height-rule:exactly;">&nbsp;</td></tr></table>';
+
+  const b = BANNERS.find(x => x.id === banner);
+
+  const html =
+'<table cellpadding="0" cellspacing="0" border="0" width="600" style="border-collapse:collapse;width:600px;' + F + '">' +
+ '<tr><td style="padding:0;">' +
+  '<table cellpadding="0" cellspacing="0" border="0" width="600" style="border-collapse:collapse;width:600px;">' +
+   '<tr>' +
+    '<td valign="top" width="196" style="width:196px;padding:0 20px 0 0;vertical-align:top;">' +
+      '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">' +
+       '<tr><td style="' + F + 'font-size:16px;line-height:' + LH + 'px;font-weight:bold;color:' + C.green1 + ';mso-line-height-rule:exactly;padding:0;">' + esc(name) + '</td></tr>' +
+       '<tr><td style="' + lineStyle + 'padding:4px 0 0 0;">' + esc(title) + '</td></tr>' +
+      '</table>' +
+    '</td>' +
+    '<td valign="top" width="3" style="width:3px;padding:0;vertical-align:top;">' + bar + '</td>' +
+    '<td valign="top" width="228" style="width:228px;padding:0 0 0 20px;vertical-align:top;">' +
+      '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">' + rows + '</table>' +
+    '</td>' +
+    '<td valign="top" align="right" width="153" style="width:153px;padding:0;vertical-align:top;text-align:right;">' +
+      '<a href="' + WEBSITE_URL + '" style="text-decoration:none;"><img src="' + src(LOGO.file) + '" width="' + LOGO.width + '" height="' + LOGO.height + '" alt="Ka Uruora" style="display:block;border:0;width:' + LOGO.width + 'px;height:' + LOGO.height + 'px;margin-left:auto;"></a>' +
+    '</td>' +
+   '</tr>' +
+  '</table>' +
+ '</td></tr>' +
+ '<tr><td style="padding:22px 0 0 0;">' +
+  '<a href="' + BANNER_LINK + '" style="text-decoration:none;"><img src="' + src(b.file) + '" width="' + BANNER_SIZE.width + '" height="' + BANNER_SIZE.height + '" alt="Ka Uruora. For all Māori and iwi whānau, this generation and the next." style="display:block;border:0;width:' + BANNER_SIZE.width + 'px;height:' + BANNER_SIZE.height + 'px;"></a>' +
+ '</td></tr>' +
+'</table>';
+  return entities(html);
+}
+
+function buildText(v){
+  const out = [v.name || 'Your Name', v.title || 'Your role', 'Ka Uruora', ''];
+  if(v.email) out.push(v.email);
+  if(v.mobile) out.push((v.phone ? 'M ' : '') + v.mobile);
+  if(v.phone) out.push((v.mobile ? 'P ' : '') + v.phone);
+  if(v.address) out.push(v.address);
+  return out.join('\n');
+}
+
+/* ===== Preview ===== */
+function fit(){
+  const box = $('sig-scale'), inner = $('preview');
+  const s = Math.min(1, box.clientWidth / 600);
+  inner.style.transform = 'scale(' + s + ')';
+  box.style.height = (inner.offsetHeight * s) + 'px';
+}
+function render(){
+  $('preview').innerHTML = buildSignature(values(), embedded);
+  fit();
+}
+window.addEventListener('resize', fit);
+
+function check(){
+  const v = values(); const missing = [];
+  [['name','your name'],['title','your role'],['email','your email']].forEach(([f,l]) => {
+    const bad = !v[f] || (f === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v[f]));
+    $('f-'+f).classList.toggle('invalid', bad);
+    if(bad) missing.push([f,l]);
+  });
+  if(missing.length){
+    const ls = missing.map(m => m[1]);
+    $('status').textContent = 'Add ' + (ls.length > 1 ? ls.slice(0,-1).join(', ') + ' and ' + ls[ls.length-1] : ls[0]) + ' first.';
+    $('f-' + missing[0][0]).focus();
+    return null;
+  }
+  $('status').textContent = '';
+  return v;
+}
+
+let copiedTimer;
+function showCopied(){
+  const m = $('copied-msg');
+  m.hidden = false; m.classList.remove('show'); void m.offsetWidth; m.classList.add('show');
+  clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => { m.classList.remove('show'); setTimeout(() => m.hidden = true, 250); }, 6000);
+}
+function flash(btn, label){
+  const span = btn.querySelector('span'); const o = span.textContent;
+  span.textContent = label; btn.classList.add('done');
+  setTimeout(() => { span.textContent = o; btn.classList.remove('done'); }, 2400);
+}
+
+async function copyRich(html, text){
+  try{
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([html], {type:'text/html'}),
+      'text/plain': new Blob([text], {type:'text/plain'})
+    })]);
+    return true;
+  }catch(e){
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:-9999px;top:0;';
+    holder.innerHTML = html; document.body.appendChild(holder);
+    const r = document.createRange(); r.selectNodeContents(holder);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    let ok = false; try{ ok = document.execCommand('copy'); }catch(_){}
+    s.removeAllRanges(); holder.remove();
+    return ok;
+  }
+}
+
+
+$('btn-copy').addEventListener('click', async e => {
+  const btn = e.currentTarget;
+  const v = check(); if(!v) return;
+  const ok = await copyRich(buildSignature(v, hosted), buildText(v));
+  if(ok){ flash(btn, 'Copied'); showCopied(); }
+  else $('status').textContent = 'Your browser blocked copying. Try again in Chrome, Edge or Safari.';
+});
+
+
+
+/* banner picker */
+const tick = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+$('banners').innerHTML = BANNERS.map((b,i) =>
+  '<label class="banner-option' + (i===0?' selected':'') + '" data-id="' + b.id + '">' +
+   '<input type="radio" name="banner" value="' + b.id + '"' + (i===0?' checked':'') + '>' +
+   '<img src="' + b.file + '" alt="' + b.name + '">' +
+   '<div class="bo-tick">' + tick + '</div>' +
+  '</label>').join('');
+$('banners').addEventListener('change', e => {
+  banner = e.target.value;
+  document.querySelectorAll('.banner-option').forEach(o => o.classList.toggle('selected', o.dataset.id === banner));
+  render();
+});
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => { const on = x === t; x.setAttribute('aria-selected', on); $(x.getAttribute('aria-controls')).hidden = !on; });
+}));
+if(/Windows/.test(navigator.userAgent)) $('t-win').click();
+
+fields.forEach(f => $('f-'+f).addEventListener('input', () => { $('f-'+f).classList.remove('invalid'); render(); }));
+render();
+document.fonts && document.fonts.ready.then(fit);
+</script>
+</body></html>
